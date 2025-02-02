@@ -1,7 +1,6 @@
 import express, { Express, Request, Response } from "express";
 import multer from "multer";
 import cors from "cors";
-import fs from "fs";
 import { emailServer } from "./smtpServer";
 require("dotenv").config();
 
@@ -97,8 +96,6 @@ app.post(
     }
   }
 );
-
-
 
 app.post(
   "/scan",
