@@ -19,6 +19,7 @@ export type EmailConfigProps = {
 export type EmailResponse = {
   success: boolean;
   data: nodemailer.SentMessageInfo[];
+  error?: string;
 };
 
 export const emailServer = async (
@@ -30,14 +31,16 @@ export const emailServer = async (
       port: 465,
       secure: true,
       auth: {
-        user: `${config.email}`,
-        pass: `${config.password}`,
+        user: config.email,
+        pass: config.password,
       },
       tls: {
         minVersion: "TLSv1.2",
       },
       debug: true,
     });
+
+    await transporter.verify();
 
     const delay = (ms: number) =>
       new Promise((resolve) => setTimeout(resolve, ms));
@@ -51,31 +54,46 @@ export const emailServer = async (
         !emailBody.recipientEmail.includes("@")
       ) {
         throw new Error(
-          `invalid format detected for the provided credential: ${emailBody.recipientEmail} or ${emailBody.recipientFirstName}. Please ensure they are in the correct format.`
+          `Invalid email format detected: ${emailBody.recipientEmail}. Ensure it's correct.`
         );
       }
 
       const mailOptions: nodemailer.SendMailOptions = {
-        from: `<i***@gmail.com> ${emailBody.senderFirstName} ${emailBody.senderLastName}`,
+        from: `"${emailBody.senderFirstName} ${emailBody.senderLastName}" <${config.email}>`, // Proper format
         to: emailBody.recipientEmail,
         subject: config.subject,
         text: `Dear ${emailBody.recipientFirstName},\n\n${config.message}\n\n\n${config.closing}, \n${emailBody.senderFirstName} ${emailBody.senderLastName}`,
       };
 
-      await delay(4000);
+      await delay(4000); // Delay to avoid rate limits
 
-      const info = await transporter.sendMail(mailOptions);
-
-      console.log(info,"email history")
-
-      sentEmails.push(info);
+      try {
+        const info = await transporter.sendMail(mailOptions);
+        console.log(`Email sent successfully: ${info.response}`);
+        sentEmails.push(info);
+      } catch (sendError: any) {
+        console.error(
+          `Failed to send email to ${emailBody.recipientEmail}:`,
+          sendError.message
+        );
+        return {
+          success: false,
+          data: sentEmails,
+          error: sendError.message,
+        };
+      }
     }
 
     return {
       success: true,
       data: sentEmails,
     };
-  } catch (error) {
-    throw error;
+  } catch (error: any) {
+    console.error("Email Server Error:", error.message || error);
+    return {
+      success: false,
+      data: [],
+      error: error.message || "Unknown error occurred",
+    };
   }
 };
