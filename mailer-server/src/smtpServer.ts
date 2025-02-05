@@ -65,7 +65,7 @@ export const emailServer = async (
         text: `Dear ${emailBody.recipientFirstName},\n\n${config.message}\n\n\n${config.closing}, \n${emailBody.senderFirstName} ${emailBody.senderLastName}`,
       };
 
-      await delay(4000); // Delay to avoid rate limits
+      await delay(5000); // Delay to avoid rate limits
 
       try {
         const info = await transporter.sendMail(mailOptions);
