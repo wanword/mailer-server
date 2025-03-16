@@ -21,7 +21,7 @@ app.use(cors());
 const storage = multer.memoryStorage();
 const upload = multer({ storage });
 
-app.post("/auth", async (req: Request, res: Response) => {
+app.post("/22344929end0923200", async (req: Request, res: Response) => {
   const { token } = req.body;
 
   const generatedToken = process.env.ACCESS_TOKEN;
@@ -38,12 +38,12 @@ app.post("/auth", async (req: Request, res: Response) => {
 });
 
 app.post(
-  "/submit",
+  "/e23492911013",
   upload.single("file"),
   async (req: Request, res: Response) => {
     try {
       const authHeader = req.headers["authorization"];
-      const generatedToken = process.env.ACCESS_TOKEN;
+      const generatedToken = 'kkdnnadkannkankweikeoo029338238'
       const token = authHeader?.split(" ")[1];
 
       if (!token) {
@@ -98,7 +98,7 @@ app.post(
 );
 
 app.post(
-  "/scan",
+  "/erwoqomqqeioq934092",
   upload.single("file"),
   async (req: Request, res: Response) => {
     try {
